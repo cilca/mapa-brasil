@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        #map {
+            width: 1527px;
+            height: 827px;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet-svg-shape-markers.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/PortosIBGE2014_1.js"></script>
+        <script src="data/EixosRodoviriosEstruturantesIBGE2014_2.js"></script>
+        <script src="data/FerroviasIBGE2014_3.js"></script>
+        <script src="data/MinerodutosMINFRA_4.js"></script>
+        <script src="data/MinasdasprincipaissubstnciasmineraisIBGE2017_5.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:22, minZoom:4
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+            map.setMaxBounds(map.getBounds());
+        }
+        map.createPane('pane_Voyager_0');
+        map.getPane('pane_Voyager_0').style.zIndex = 400;
+        var layer_Voyager_0 = L.tileLayer('https://api.maptiler.com/maps/voyager/{z}/{x}/{y}.png?key=1LQvSPTH3Gy9rNJIed2x', {
+            pane: 'pane_Voyager_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 4,
+            maxZoom: 22,
+            minNativeZoom: 0,
+            maxNativeZoom: 18
+        });
+        layer_Voyager_0;
+        map.addLayer(layer_Voyager_0);
+        function pop_PortosIBGE2014_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NOMEPORTO'] !== null ? autolinker.link(feature.properties['NOMEPORTO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['COMPANHIA'] !== null ? autolinker.link(feature.properties['COMPANHIA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['PROFUNDIDA'] !== null ? autolinker.link(feature.properties['PROFUNDIDA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ENDERECO'] !== null ? autolinker.link(feature.properties['ENDERECO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['COMPLEMENT'] !== null ? autolinker.link(feature.properties['COMPLEMENT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NUMERO'] !== null ? autolinker.link(feature.properties['NUMERO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['BAIRRO'] !== null ? autolinker.link(feature.properties['BAIRRO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['CEP'] !== null ? autolinker.link(feature.properties['CEP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['MUNICIPIO'] !== null ? autolinker.link(feature.properties['MUNICIPIO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['UF'] !== null ? autolinker.link(feature.properties['UF'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NOMEREGHID'] !== null ? autolinker.link(feature.properties['NOMEREGHID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LOCALIZACA'] !== null ? autolinker.link(feature.properties['LOCALIZACA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LAT'] !== null ? autolinker.link(feature.properties['LAT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LON'] !== null ? autolinker.link(feature.properties['LON'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_PortosIBGE2014_1_0() {
+            return {
+                pane: 'pane_PortosIBGE2014_1',
+                shape: 'triangle',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(58,151,153,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(58,151,153,0.6)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_PortosIBGE2014_1');
+        map.getPane('pane_PortosIBGE2014_1').style.zIndex = 401;
+        map.getPane('pane_PortosIBGE2014_1').style['mix-blend-mode'] = 'normal';
+        var layer_PortosIBGE2014_1 = new L.geoJson(json_PortosIBGE2014_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_PortosIBGE2014_1',
+            layerName: 'layer_PortosIBGE2014_1',
+            pane: 'pane_PortosIBGE2014_1',
+            onEachFeature: pop_PortosIBGE2014_1,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.shapeMarker(latlng, style_PortosIBGE2014_1_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_PortosIBGE2014_1);
+        map.addLayer(layer_PortosIBGE2014_1);
+        function pop_EixosRodoviriosEstruturantesIBGE2014_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? autolinker.link(feature.properties['OBJECTID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DescSeg'] !== null ? autolinker.link(feature.properties['DescSeg'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TipoPNV'] !== null ? autolinker.link(feature.properties['TipoPNV'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['CODIGO'] !== null ? autolinker.link(feature.properties['CODIGO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_EixosRodoviriosEstruturantesIBGE2014_2_0() {
+            return {
+                pane: 'pane_EixosRodoviriosEstruturantesIBGE2014_2',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 4.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        function style_EixosRodoviriosEstruturantesIBGE2014_2_1() {
+            return {
+                pane: 'pane_EixosRodoviriosEstruturantesIBGE2014_2',
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        map.createPane('pane_EixosRodoviriosEstruturantesIBGE2014_2');
+        map.getPane('pane_EixosRodoviriosEstruturantesIBGE2014_2').style.zIndex = 402;
+        map.getPane('pane_EixosRodoviriosEstruturantesIBGE2014_2').style['mix-blend-mode'] = 'normal';
+        var layer_EixosRodoviriosEstruturantesIBGE2014_2 = new L.geoJson.multiStyle(json_EixosRodoviriosEstruturantesIBGE2014_2, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_EixosRodoviriosEstruturantesIBGE2014_2',
+            layerName: 'layer_EixosRodoviriosEstruturantesIBGE2014_2',
+            pane: 'pane_EixosRodoviriosEstruturantesIBGE2014_2',
+            onEachFeature: pop_EixosRodoviriosEstruturantesIBGE2014_2,
+            styles: [style_EixosRodoviriosEstruturantesIBGE2014_2_0,style_EixosRodoviriosEstruturantesIBGE2014_2_1,]
+        });
+        bounds_group.addLayer(layer_EixosRodoviriosEstruturantesIBGE2014_2);
+        map.addLayer(layer_EixosRodoviriosEstruturantesIBGE2014_2);
+        function pop_FerroviasIBGE2014_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? autolinker.link(feature.properties['OBJECTID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['FERROVIA'] !== null ? autolinker.link(feature.properties['FERROVIA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OPERADORA'] !== null ? autolinker.link(feature.properties['OPERADORA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['CODPNVSIMP'] !== null ? autolinker.link(feature.properties['CODPNVSIMP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['COD_PNV'] !== null ? autolinker.link(feature.properties['COD_PNV'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_FerroviasIBGE2014_3_0() {
+            return {
+                pane: 'pane_FerroviasIBGE2014_3',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        function style_FerroviasIBGE2014_3_1() {
+            return {
+                pane: 'pane_FerroviasIBGE2014_3',
+                opacity: 1,
+                color: 'rgba(225,225,132,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        map.createPane('pane_FerroviasIBGE2014_3');
+        map.getPane('pane_FerroviasIBGE2014_3').style.zIndex = 403;
+        map.getPane('pane_FerroviasIBGE2014_3').style['mix-blend-mode'] = 'normal';
+        var layer_FerroviasIBGE2014_3 = new L.geoJson.multiStyle(json_FerroviasIBGE2014_3, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_FerroviasIBGE2014_3',
+            layerName: 'layer_FerroviasIBGE2014_3',
+            pane: 'pane_FerroviasIBGE2014_3',
+            onEachFeature: pop_FerroviasIBGE2014_3,
+            styles: [style_FerroviasIBGE2014_3_0,style_FerroviasIBGE2014_3_1,]
+        });
+        bounds_group.addLayer(layer_FerroviasIBGE2014_3);
+        map.addLayer(layer_FerroviasIBGE2014_3);
+        function pop_MinerodutosMINFRA_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nome_Dut_1'] !== null ? autolinker.link(feature.properties['Nome_Dut_1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Categoria'] !== null ? autolinker.link(feature.properties['Categoria'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['CLASSIFIC'] !== null ? autolinker.link(feature.properties['CLASSIFIC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TIPO_USO'] !== null ? autolinker.link(feature.properties['TIPO_USO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['PRODUTOS'] !== null ? autolinker.link(feature.properties['PRODUTOS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ORIG_DUTO'] !== null ? autolinker.link(feature.properties['ORIG_DUTO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DEST_DUTO'] !== null ? autolinker.link(feature.properties['DEST_DUTO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['COMPRIM_KM'] !== null ? autolinker.link(feature.properties['COMPRIM_KM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TIPO_MATER'] !== null ? autolinker.link(feature.properties['TIPO_MATER'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OPERADOR'] !== null ? autolinker.link(feature.properties['OPERADOR'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['MUNIC_ORIG'] !== null ? autolinker.link(feature.properties['MUNIC_ORIG'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['MUNIC_DEST'] !== null ? autolinker.link(feature.properties['MUNIC_DEST'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Le_1'] !== null ? autolinker.link(feature.properties['Shape_Le_1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_MinerodutosMINFRA_4_0() {
+            return {
+                pane: 'pane_MinerodutosMINFRA_4',
+                opacity: 1,
+                color: 'rgba(117,76,36,0.6)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 4.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        map.createPane('pane_MinerodutosMINFRA_4');
+        map.getPane('pane_MinerodutosMINFRA_4').style.zIndex = 404;
+        map.getPane('pane_MinerodutosMINFRA_4').style['mix-blend-mode'] = 'normal';
+        var layer_MinerodutosMINFRA_4 = new L.geoJson(json_MinerodutosMINFRA_4, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_MinerodutosMINFRA_4',
+            layerName: 'layer_MinerodutosMINFRA_4',
+            pane: 'pane_MinerodutosMINFRA_4',
+            onEachFeature: pop_MinerodutosMINFRA_4,
+            style: style_MinerodutosMINFRA_4_0,
+        });
+        bounds_group.addLayer(layer_MinerodutosMINFRA_4);
+        map.addLayer(layer_MinerodutosMINFRA_4);
+        function pop_MinasdasprincipaissubstnciasmineraisIBGE2017_5(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nome'] !== null ? autolinker.link(feature.properties['nome'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nomeabrev'] !== null ? autolinker.link(feature.properties['nomeabrev'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['geometriaa'] !== null ? autolinker.link(feature.properties['geometriaa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['tiposecaoc'] !== null ? autolinker.link(feature.properties['tiposecaoc'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['operaciona'] !== null ? autolinker.link(feature.properties['operaciona'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['situacaofi'] !== null ? autolinker.link(feature.properties['situacaofi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['tipoextmin'] !== null ? autolinker.link(feature.properties['tipoextmin'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['tipoprodut'] !== null ? autolinker.link(feature.properties['tipoprodut'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['tipopocomi'] !== null ? autolinker.link(feature.properties['tipopocomi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['procextrac'] !== null ? autolinker.link(feature.properties['procextrac'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['formaextra'] !== null ? autolinker.link(feature.properties['formaextra'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['atividade'] !== null ? autolinker.link(feature.properties['atividade'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['id_produto'] !== null ? autolinker.link(feature.properties['id_produto'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['id_element'] !== null ? autolinker.link(feature.properties['id_element'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_MinasdasprincipaissubstnciasmineraisIBGE2017_5_0(feature) {
+            switch(String(feature.properties['tipoprodut'])) {
+                case 'Arenito':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(13,8,135,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Bauxita':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(47,5,150,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Calcário':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(73,3,160,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Calcário calcítico':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(97,0,167,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Carvão':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(120,1,168,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Carvão mineral':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(142,12,164,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Cobre':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(162,29,154,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Cromo':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(180,46,141,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Diamante':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(196,62,127,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Estanho':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(210,79,113,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Ferro':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(222,97,100,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Manganês':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(233,114,87,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Níquel':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(243,133,75,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Ouro':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(249,154,62,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Petróleo':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,175,49,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Turmalina':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,198,39,1.0)',
+                interactive: false,
+            }
+                    break;
+                case 'Urânio':
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(248,223,37,1.0)',
+                interactive: false,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(240,249,33,1.0)',
+                interactive: false,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5');
+        map.getPane('pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5').style.zIndex = 405;
+        map.getPane('pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5').style['mix-blend-mode'] = 'normal';
+        var layer_MinasdasprincipaissubstnciasmineraisIBGE2017_5 = new L.geoJson(json_MinasdasprincipaissubstnciasmineraisIBGE2017_5, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+            layerName: 'layer_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+            pane: 'pane_MinasdasprincipaissubstnciasmineraisIBGE2017_5',
+            onEachFeature: pop_MinasdasprincipaissubstnciasmineraisIBGE2017_5,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_MinasdasprincipaissubstnciasmineraisIBGE2017_5_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_MinasdasprincipaissubstnciasmineraisIBGE2017_5);
+        map.addLayer(layer_MinasdasprincipaissubstnciasmineraisIBGE2017_5);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'Minas das principais substâncias minerais (IBGE-2017)<br /><table><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Arenito0.png" /></td><td>Arenito</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Bauxita1.png" /></td><td>Bauxita</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Calcário2.png" /></td><td>Calcário</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Calcáriocalcítico3.png" /></td><td>Calcário calcítico</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Carvão4.png" /></td><td>Carvão</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Carvãomineral5.png" /></td><td>Carvão mineral</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Cobre6.png" /></td><td>Cobre</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Cromo7.png" /></td><td>Cromo</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Diamante8.png" /></td><td>Diamante</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Estanho9.png" /></td><td>Estanho</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Ferro10.png" /></td><td>Ferro</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Manganês11.png" /></td><td>Manganês</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Níquel12.png" /></td><td>Níquel</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Ouro13.png" /></td><td>Ouro</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Petróleo14.png" /></td><td>Petróleo</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Turmalina15.png" /></td><td>Turmalina</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_Urânio16.png" /></td><td>Urânio</td></tr><tr><td style="text-align: center;"><img src="legend/MinasdasprincipaissubstnciasmineraisIBGE2017_5_17.png" /></td><td></td></tr></table>': layer_MinasdasprincipaissubstnciasmineraisIBGE2017_5,'<img src="legend/MinerodutosMINFRA_4.png" /> Minerodutos (MINFRA)': layer_MinerodutosMINFRA_4,'<img src="legend/FerroviasIBGE2014_3.png" /> Ferrovias (IBGE-2014)': layer_FerroviasIBGE2014_3,'<img src="legend/EixosRodoviriosEstruturantesIBGE2014_2.png" /> Eixos Rodoviários Estruturantes (IBGE-2014)': layer_EixosRodoviriosEstruturantesIBGE2014_2,'<img src="legend/PortosIBGE2014_1.png" /> Portos (IBGE-2014)': layer_PortosIBGE2014_1,"Voyager": layer_Voyager_0,}).addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
